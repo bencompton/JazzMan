@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using JazzMan.SpecBlocks;
 using JazzMan.SpecExecution;
 
 namespace JazzMan
@@ -40,9 +39,9 @@ namespace JazzMan
         {
             get
             {
-                DescribeBlock mainDescribeBlock = _specFinder.Find(_runtimeContext.CurrentlyEvaluatingMethodName);
+                var mainDescribeBlock = _specFinder.Find(_runtimeContext.CurrentlyEvaluatingMethodName);
                 var executableSpecs = _describeBlockToExecutableSpecConverter.GetExecutableSpecs(mainDescribeBlock);
-                _runtimeContext.AddSpecs(this.GetType().Name, _runtimeContext.CurrentlyEvaluatingMethodName, executableSpecs);
+                _runtimeContext.AddSpecs(GetType().Name, _runtimeContext.CurrentlyEvaluatingMethodName, executableSpecs);
 
                 return executableSpecs;
             }

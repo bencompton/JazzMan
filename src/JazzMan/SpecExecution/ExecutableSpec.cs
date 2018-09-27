@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using JazzMan.SpecBlocks;
-using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 
 namespace JazzMan.SpecExecution
 {
     public class ExecutableSpec : ITestCaseData
     {
-        private ItBlock _itBlock;
+        private readonly ItBlock _itBlock;
 
         public string TestName
         {
@@ -19,7 +17,7 @@ namespace JazzMan.SpecExecution
                 var sb = new StringBuilder();
                 var whitespace = new StringBuilder();
 
-                foreach (DescribeBlock describeBlock in ParentDescribeBlocks)
+                foreach (var describeBlock in ParentDescribeBlocks)
                 {
                     //Skip the top level describe block (method-level) so the method name won't get repeated in the spec name
                     if (describeBlock.ParentDescribeBlock == null) continue;
@@ -64,14 +62,14 @@ namespace JazzMan.SpecExecution
 
         public void Execute()
         {
-            foreach (DescribeBlock parentDescribeBlock in ParentDescribeBlocks)
+            foreach (var parentDescribeBlock in ParentDescribeBlocks)
             {
-                foreach (BeforeEachBlock beforeEach in parentDescribeBlock.ChildBeforeEachBlocks)
+                foreach (var beforeEach in parentDescribeBlock.ChildBeforeEachBlocks)
                 {
                     beforeEach.Func();
                 }
 
-                foreach (BeforeAllBlock beforeAll in parentDescribeBlock.ChildBeforeAllBlocks)
+                foreach (var beforeAll in parentDescribeBlock.ChildBeforeAllBlocks)
                 {
                     if (!beforeAll.HasExecuted)
                     {
@@ -87,56 +85,29 @@ namespace JazzMan.SpecExecution
 
 #region "Unused properties required to implement ITestCaseData"
 
-        public object[] Arguments
-        {
-            get { return new object[0]; }
-        }
+        public object[] Arguments => new object[0];
 
         public IPropertyBag Properties { get; }
 
-        public string Description
-        {
-            get { return null; }
-        }
+        public string Description => null;
 
-        public Type ExpectedException
-        {
-            get { return null; }
-        }
+        public Type ExpectedException => null;
 
-        public string ExpectedExceptionName
-        {
-            get { return null; }
-        }
+        public string ExpectedExceptionName => null;
 
-        public bool Explicit
-        {
-            get { return false; }
-        }
+        public bool Explicit => false;
 
         public object ExpectedResult { get; }
 
-        public bool HasExpectedResult
-        {
-            get { return false; }
-        }
+        public bool HasExpectedResult => false;
 
-        public string IgnoreReason
-        {
-            get { return null; }
-        }
+        public string IgnoreReason => null;
 
-        public bool Ignored
-        {
-            get { return false; }
-        }
+        public bool Ignored => false;
 
-        public object Result
-        {
-            get { return null; }
-        }
+        public object Result => null;
 
-#endregion
+        #endregion
 
     }
 }

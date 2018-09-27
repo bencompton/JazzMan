@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Reflection;
-
 using JazzMan.SpecBlocks;
 
 namespace JazzMan
@@ -9,24 +7,24 @@ namespace JazzMan
     {
         private readonly JazzManSpec _specToSearch;
         private DescribeBlock _currentDescribeBlock;
-        private IRuntimeContext _runtimeContext;
+        private readonly IRuntimeContext _runtimeContext;
 
         public SpecFinder(JazzManSpec specToSearch, IRuntimeContext runtimeContext)
         {
             _specToSearch = specToSearch;
             _runtimeContext = runtimeContext;
 
-            specToSearch.describe += this.HandleDescribeMethodCall;
-            specToSearch.it += this.HandleItMethodCall;
-            specToSearch.beforeEach += this.HandleBeforeEachMethodCall;
-            specToSearch.beforeAll += this.HandleBeforeAllMethodCall;
+            specToSearch.describe += HandleDescribeMethodCall;
+            specToSearch.it += HandleItMethodCall;
+            specToSearch.beforeEach += HandleBeforeEachMethodCall;
+            specToSearch.beforeAll += HandleBeforeAllMethodCall;
         }
 
         public DescribeBlock Find(string methodName)
         {
-            DescribeBlock methodDescribeBlock = new DescribeBlock(methodName.Replace("_", " "));
+            var methodDescribeBlock = new DescribeBlock(methodName.Replace("_", " "));
 
-            foreach (MethodInfo method in _specToSearch.GetType().GetMethods())
+            foreach (var method in _specToSearch.GetType().GetMethods())
             {
                 if (method.Name == methodName)
                 {
@@ -43,7 +41,7 @@ namespace JazzMan
         {
             if (!_runtimeContext.TestsExecuting)
             {
-                foreach (DescribeBlock childDescribeBlock in parentDescribeBlock.ChildDescribeBlocks)
+                foreach (var childDescribeBlock in parentDescribeBlock.ChildDescribeBlocks)
                 {
                     _currentDescribeBlock = childDescribeBlock;
                     childDescribeBlock.Func();
@@ -54,42 +52,31 @@ namespace JazzMan
 
         public void HandleDescribeMethodCall(string description, Action func)
         {
-            if (!_runtimeContext.TestsExecuting)
-            {
-                var newDescribeBlock = new DescribeBlock(description, func);
-                newDescribeBlock.ParentDescribeBlock = _currentDescribeBlock;
-                _currentDescribeBlock.ChildDescribeBlocks.Add(newDescribeBlock);
-            }
+            if (_runtimeContext.TestsExecuting) return;
+            var newDescribeBlock =
+                new DescribeBlock(description, func) {ParentDescribeBlock = _currentDescribeBlock};
+            _currentDescribeBlock.ChildDescribeBlocks.Add(newDescribeBlock);
         }
 
         public void HandleItMethodCall(string description, Action func)
         {
-            if (!_runtimeContext.TestsExecuting)
-            {
-                var newItBlock = new ItBlock(description, func);
-                newItBlock.ParentDescribeBlock = _currentDescribeBlock;
-                _currentDescribeBlock.ChildItBlocks.Add(newItBlock);
-            }
+            if (_runtimeContext.TestsExecuting) return;
+            var newItBlock = new ItBlock(description, func) {ParentDescribeBlock = _currentDescribeBlock};
+            _currentDescribeBlock.ChildItBlocks.Add(newItBlock);
         }
 
         public void HandleBeforeEachMethodCall(Action func)
         {
-            if (!_runtimeContext.TestsExecuting)
-            {
-                var newBeforeEachBlock = new BeforeEachBlock(func);
-                newBeforeEachBlock.ParentDescribeBlock = _currentDescribeBlock;
-                _currentDescribeBlock.ChildBeforeEachBlocks.Add(newBeforeEachBlock);
-            }
+            if (_runtimeContext.TestsExecuting) return;
+            var newBeforeEachBlock = new BeforeEachBlock(func) {ParentDescribeBlock = _currentDescribeBlock};
+            _currentDescribeBlock.ChildBeforeEachBlocks.Add(newBeforeEachBlock);
         }
 
         public void HandleBeforeAllMethodCall(Action func)
         {
-            if (!_runtimeContext.TestsExecuting)
-            {
-                var newBeforeAllBlock = new BeforeAllBlock(func);
-                newBeforeAllBlock.ParentDescribeBlock = _currentDescribeBlock;
-                _currentDescribeBlock.ChildBeforeAllBlocks.Add(newBeforeAllBlock);
-            }
+            if (_runtimeContext.TestsExecuting) return;
+            var newBeforeAllBlock = new BeforeAllBlock(func) {ParentDescribeBlock = _currentDescribeBlock};
+            _currentDescribeBlock.ChildBeforeAllBlocks.Add(newBeforeAllBlock);
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using JazzMan.SpecBlocks;
-using NUnit.Framework;
 
 namespace JazzMan.SpecExecution
 {
@@ -10,12 +9,12 @@ namespace JazzMan.SpecExecution
         {
             var executableTests = new List<ExecutableSpec>();
 
-            foreach (ItBlock itBlock in describeBlock.ChildItBlocks)
+            foreach (var itBlock in describeBlock.ChildItBlocks)
             {
                 executableTests.Add(new ExecutableSpec(itBlock));
             }
 
-            foreach (DescribeBlock childDescribeBlock in describeBlock.ChildDescribeBlocks)
+            foreach (var childDescribeBlock in describeBlock.ChildDescribeBlocks)
             {
                 executableTests.AddRange(GetExecutableSpecs(childDescribeBlock));
             }

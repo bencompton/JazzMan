@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using JazzMan.SpecExecution;
 
 namespace JazzMan
@@ -13,7 +12,7 @@ namespace JazzMan
             {
                 try
                 {
-                    string dummy = NUnit.Framework.TestContext.CurrentContext.Test.Name;
+                    var dummy = NUnit.Framework.TestContext.CurrentContext.Test.Name;
                     return true;
                 }
                 catch (Exception)
@@ -24,31 +23,18 @@ namespace JazzMan
             }
         }
 
-        public string CurrentlyExecutingSpecName
-        {
-            get
-            {
-                return NUnit.Framework.TestContext.CurrentContext.Test.Name;
-            }
-        }
+        public string CurrentlyExecutingSpecName => NUnit.Framework.TestContext.CurrentContext.Test.Name;
 
         public string CurrentlyEvaluatingMethodName
         {
-            get
-            {
-                return (string)AppDomain.CurrentDomain.GetData("CurrentlyEvaluatingMethodName");
-                
-            }
-            set
-            {
-               AppDomain.CurrentDomain.SetData("CurrentlyEvaluatingMethodName", value); 
-            }
+            get => (string)AppDomain.CurrentDomain.GetData("CurrentlyEvaluatingMethodName");
+            set => AppDomain.CurrentDomain.SetData("CurrentlyEvaluatingMethodName", value);
         }
 
         public List<ExecutableSpec> GetSpecs(string className, string methodName)
         {
             return AppDomain.CurrentDomain.GetData(
-                String.Format(
+                string.Format(
                     "Specs_For_{0}_{1}",
                     className,
                     methodName
